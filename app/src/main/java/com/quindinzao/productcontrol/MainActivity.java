@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.tsuryo.swipeablerv.SwipeLeftRightCallback;
@@ -23,20 +25,41 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
     private final List<Product> productList = new ArrayList<>();
     private SwipeableRecyclerView rvProduct;
 
+    private ImageButton ibAdd;
+    private ImageButton ibMenu;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setTitle(R.string.app_name);
-        toolbar.setTitleTextColor(Color.parseColor("#FFFBF3"));
-
         rvProduct = findViewById(R.id.rvProducts);
+        ibAdd = findViewById(R.id.ib_add);
+        ibMenu = findViewById(R.id.ib_menu);
 
         loadList();
         configRecyclerView();
+        clickListeners();
+    }
+
+    private void clickListeners() {
+        ibAdd.setOnClickListener(v -> {
+            Toast.makeText(this, R.string.add, Toast.LENGTH_SHORT).show();
+        });
+
+        ibMenu.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(this, ibMenu);
+            popupMenu.getMenuInflater().inflate(R.menu.menu_toolbar, popupMenu.getMenu());
+
+            popupMenu.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.menu_about) {
+                    Toast.makeText(this, R.string.about, Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            });
+
+            popupMenu.show();
+        });
     }
 
     private void configRecyclerView() {
@@ -109,25 +132,5 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
     @Override
     public void onCLickListener(Product product) {
         Toast.makeText(this, product.getName(), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_toolbar, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int idMenu = item.getItemId();
-
-        if (idMenu == R.id.menu_about) {
-            Toast.makeText(this, R.string.about, Toast.LENGTH_SHORT).show();
-        } else if (idMenu == R.id.menu_add) {
-            Toast.makeText(this, R.string.add, Toast.LENGTH_SHORT).show();
-        }
-
-        return true;
     }
 }
